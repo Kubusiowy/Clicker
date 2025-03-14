@@ -9,8 +9,8 @@ object StorageOperations {
     private const val KEY_GAME_DATA = "game_data"
 
     fun saveGameData(context: Context, gameData: GameData) {
-        val SharedPrefs =context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        val editor = SharedPrefs.edit()
+        val sharedPrefs =context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        val editor = sharedPrefs.edit()
         val json = JsonConverter.toJson(gameData)
 
         editor.putString(KEY_GAME_DATA, json)

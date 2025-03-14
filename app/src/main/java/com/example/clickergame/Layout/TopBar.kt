@@ -66,7 +66,7 @@ fun TopBar(money:Double, level:Int, jednoKlikniecie:Double)
    {
        Column()
        {
-           CardFirst(money)
+           CardFirst(money,level)
 
            Spacer(Modifier.height(10.dp))
 
@@ -78,11 +78,11 @@ fun TopBar(money:Double, level:Int, jednoKlikniecie:Double)
 }
 
 @Composable
-fun CardFirst(money:Double)
+fun CardFirst(money:Double,lvl:Int)
 {
     Card(modifier = Modifier
         .fillMaxWidth()
-        ,colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+        ,colors = CardDefaults.cardColors(containerColor = if(lvl > 1) Color.Yellow else Color.LightGray)
         ,elevation = CardDefaults.cardElevation(8.dp)
     )
     {
