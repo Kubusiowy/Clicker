@@ -12,11 +12,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -25,19 +35,21 @@ import androidx.compose.ui.graphics.Shader
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.clickergame.R
+import androidx.compose.material3.LinearProgressIndicator
+import com.example.clickergame.ButtonUpgrade.UpgradeButton
 
-import com.example.clickergame.data.Dane
+
 val colors = listOf(Color.Cyan, Color.Blue)
 
-val dane = Dane(money = 0.00, lvl = 1, jednoKlikniecie = 2.50)
-
-
 @Composable
-fun TopBar()
+fun TopBar(money:Double, level:Int, jednoKlikniecie:Double)
 {
+    val maxMoney = 1000*level
+
    Box(modifier = Modifier
        .fillMaxWidth()
        .background(brush = Brush.linearGradient(
@@ -50,11 +62,11 @@ fun TopBar()
    {
        Column()
        {
-           CardFirst()
+           CardFirst(money)
 
-           Spacer(Modifier.height(5.dp))
+           Spacer(Modifier.height(10.dp))
 
-           CardSecond()
+           CardSecond(money, level, jednoKlikniecie, maxMoney)
        }
 
    }
@@ -62,7 +74,7 @@ fun TopBar()
 }
 
 @Composable
-fun CardFirst()
+fun CardFirst(money:Double)
 {
     Card(modifier = Modifier
         .fillMaxWidth()
@@ -81,9 +93,9 @@ fun CardFirst()
             }
             Spacer(Modifier.height(10.dp))
             Text(text = "Saldo: ")
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(5.dp))
 
-            Text(text = "${dane.money}", fontSize = 26.sp)
+            Text(text = "${money}", fontSize = 26.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(10.dp))
         }
 
@@ -91,24 +103,63 @@ fun CardFirst()
 }
 
 @Composable
-fun CardSecond()
+fun CardSecond(money:Double, level: Int, jednoKlikniecie: Double, maxMoney:Int)
 {
+
+    val progress = (money / maxMoney).coerceIn(0.0, 1.0).toFloat()
+
     Card(modifier = Modifier
         .fillMaxWidth()
         ,colors = CardDefaults.cardColors(containerColor = Color.White)
 
     )
     {
-        Column(Modifier.padding(start = 20.dp, end = 20.dp))
+        Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 15.dp))
         {
             Row(modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 5.dp))
+                .padding(top = 5.dp)
+                , verticalAlignment = Alignment.CenterVertically
+            )
             {
-                Text(text = "${dane.jednoKlikniecie}")
+                Text(text = "$ ${jednoKlikniecie}",fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.width(5.dp))
+                Text(text = "za kliknięcie")
             }
+            Spacer(Modifier.height(5.dp))
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                ,verticalAlignment = Alignment.CenterVertically
+                ,horizontalArrangement = Arrangement.SpaceBetween
+            )
+            {
+                Text(text = "${level} poziom")
+                Row(verticalAlignment = Alignment.CenterVertically)
+                {
+                    Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "increse")
+                    Text(text = "${jednoKlikniecie * (level +1)} za klikniecie")
+                }
 
 
+            }
+            LinearProgressIndicator(
+                progress = { progress },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(5.dp),
+                color = Color.Green,
+                trackColor = Color.DarkGray
+            )
+            Spacer(Modifier.height(5.dp))
+
+            Row(Modifier
+                .fillMaxWidth()
+                ,verticalAlignment = Alignment.CenterVertically)
+            {
+                Spacer(modifier = Modifier.weight(1f))
+                Text("${money.toInt()} / ${maxMoney.toInt()}")
+            }
+            Spacer(Modifier.height(10.dp))
 
         }
 
