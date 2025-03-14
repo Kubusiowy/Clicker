@@ -40,7 +40,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.clickergame.R
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.ui.draw.shadow
 import com.example.clickergame.ButtonUpgrade.UpgradeButton
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 
 val colors = listOf(Color.Cyan, Color.Blue)
@@ -57,6 +60,7 @@ fun TopBar(money:Double, level:Int, jednoKlikniecie:Double)
        ))
        .padding(WindowInsets.statusBars.asPaddingValues())
        .padding(8.dp)
+
 
    )
    {
@@ -79,6 +83,7 @@ fun CardFirst(money:Double)
     Card(modifier = Modifier
         .fillMaxWidth()
         ,colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+        ,elevation = CardDefaults.cardElevation(8.dp)
     )
     {
         Column(Modifier.padding(start = 20.dp, end = 20.dp))
@@ -95,7 +100,7 @@ fun CardFirst(money:Double)
             Text(text = "Saldo: ")
             Spacer(Modifier.height(5.dp))
 
-            Text(text = "${money}", fontSize = 26.sp, fontWeight = FontWeight.Bold)
+            Text(text = "${String.format("%.2f", money).replace(',', '.').toDouble()}", fontSize = 26.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(10.dp))
         }
 
@@ -107,10 +112,11 @@ fun CardSecond(money:Double, level: Int, jednoKlikniecie: Double, maxMoney:Int)
 {
 
     val progress = (money / maxMoney).coerceIn(0.0, 1.0).toFloat()
-
+    val rounded = BigDecimal(jednoKlikniecie).setScale(2, RoundingMode.HALF_UP).toDouble()
     Card(modifier = Modifier
         .fillMaxWidth()
         ,colors = CardDefaults.cardColors(containerColor = Color.White)
+        ,elevation = CardDefaults.cardElevation(8.dp),
 
     )
     {
@@ -122,7 +128,7 @@ fun CardSecond(money:Double, level: Int, jednoKlikniecie: Double, maxMoney:Int)
                 , verticalAlignment = Alignment.CenterVertically
             )
             {
-                Text(text = "$ ${jednoKlikniecie}",fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text(text = "$ ${String.format("%.2f", jednoKlikniecie).replace(',', '.').toDouble()}",fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.width(5.dp))
                 Text(text = "za kliknięcie")
             }
@@ -136,8 +142,9 @@ fun CardSecond(money:Double, level: Int, jednoKlikniecie: Double, maxMoney:Int)
                 Text(text = "${level} poziom")
                 Row(verticalAlignment = Alignment.CenterVertically)
                 {
+
                     Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "increse")
-                    Text(text = "${jednoKlikniecie * (level +1)} za klikniecie")
+                    Text(text = "${rounded*(level+1)} za klikniecie")
                 }
 
 
@@ -146,8 +153,8 @@ fun CardSecond(money:Double, level: Int, jednoKlikniecie: Double, maxMoney:Int)
                 progress = { progress },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(5.dp),
-                color = Color.Green,
+                    .height(5.dp)
+                    , color = Color.Green,
                 trackColor = Color.DarkGray
             )
             Spacer(Modifier.height(5.dp))
@@ -157,9 +164,10 @@ fun CardSecond(money:Double, level: Int, jednoKlikniecie: Double, maxMoney:Int)
                 ,verticalAlignment = Alignment.CenterVertically)
             {
                 Spacer(modifier = Modifier.weight(1f))
-                Text("${money.toInt()} / ${maxMoney.toInt()}")
+                Text("$ ${String.format("%.2f", money).replace(',', '.').toDouble()} / $ ${maxMoney.toInt()}")
             }
             Spacer(Modifier.height(10.dp))
+
 
         }
 

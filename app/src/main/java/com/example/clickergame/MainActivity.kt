@@ -18,12 +18,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.clickergame.ButtonUpgrade.UpgradeButton
 import com.example.clickergame.Layout.Body
 import com.example.clickergame.Layout.Footer
 import com.example.clickergame.Layout.TopBar
+import com.example.clickergame.gameData.GameData
 import com.example.clickergame.ui.theme.ClickerGameTheme
+import com.example.clickergame.util.StorageOperations
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,35 +45,46 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen()
 {
-    var money by remember { mutableStateOf(0.0) }
-    var level by remember { mutableStateOf(1) }
-    var jednoKlikniecie by remember { mutableStateOf(2.5 * level) }
-   Column()
+   val context = LocalContext.current
+
+    var gameData by remember { mutableStateOf(StorageOperations.loadGameData(context)?: GameData(0.0, 1, 1.0)) }
+
+
+
+
+   Column(modifier = Modifier.fillMaxSize())
    {
+       TopBar(gameData.money, gameData.level, gameData.jednoKlikniecie)
 
-       Column(modifier = Modifier.fillMaxSize())
+       Column(modifier = Modifier.weight(1f))
        {
-           TopBar(money, level, jednoKlikniecie)
-
-           Body { money += jednoKlikniecie }
-
-           if (money >= 1000*level) {
 
 
-           UpgradeButton(
-               onUpgrade = {
-                   money -= 1000*level
-                   level++
-                   jednoKlikniecie *= level
-               })
-             }
+           Body {
+               gameData = gameData.copy(money = gameData.money + gameData.jednoKlikniecie)
+               StorageOperations.saveGameData(context, gameData)
 
-           Footer()
+           }
+
+           if (gameData.money >= 1000 * gameData.level) {
+               UpgradeButton(
+                   onUpgrade = {
+                       gameData = gameData.copy(
+                           money = gameData.money - (1000 * gameData.level),
+                           level = gameData.level + 1,
+                           jednoKlikniecie = gameData.jednoKlikniecie * (gameData.level * 0.8)
+
+                       )
+                   })
+           }
+
        }
+       Footer()
 
 
    }
 }
+
 
 
 
