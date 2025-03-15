@@ -41,9 +41,11 @@ import androidx.compose.ui.unit.sp
 import com.example.clickergame.R
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.times
 import com.example.clickergame.ButtonUpgrade.UpgradeButton
 import java.math.BigDecimal
 import java.math.RoundingMode
+import kotlin.time.times
 
 
 val colors = listOf(Color.Cyan, Color.Blue)
@@ -51,7 +53,7 @@ val colors = listOf(Color.Cyan, Color.Blue)
 @Composable
 fun TopBar(money:Double, level:Int, jednoKlikniecie:Double)
 {
-    val maxMoney = 1000*level
+    val maxMoney = 1000*level*level
 
    Box(modifier = Modifier
        .fillMaxWidth()
@@ -112,7 +114,8 @@ fun CardSecond(money:Double, level: Int, jednoKlikniecie: Double, maxMoney:Int)
 {
 
     val progress = (money / maxMoney).coerceIn(0.0, 1.0).toFloat()
-    val rounded = BigDecimal(jednoKlikniecie).setScale(2, RoundingMode.HALF_UP).toDouble()
+var xdddddd = jednoKlikniecie*(level+1)
+    val rounded = xdddddd.toBigDecimal().setScale(2, RoundingMode.HALF_UP).toPlainString()
     Card(modifier = Modifier
         .fillMaxWidth()
         ,colors = CardDefaults.cardColors(containerColor = Color.White)
@@ -144,7 +147,7 @@ fun CardSecond(money:Double, level: Int, jednoKlikniecie: Double, maxMoney:Int)
                 {
 
                     Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "increse")
-                    Text(text = "${rounded*(level+1)} za klikniecie")
+                    Text(text = "${xdddddd} za klikniecie")
                 }
 
 

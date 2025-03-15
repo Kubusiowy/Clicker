@@ -22,7 +22,10 @@ import com.example.clickergame.Screens.shopScreen
 import com.example.clickergame.gameData.GameData
 import com.example.clickergame.util.StorageOperations
 
+
+
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -38,24 +41,21 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppNavigator() {
+    val context = LocalContext.current
     var selectedScreen by remember { mutableStateOf("home") }
-
+    var gameData by remember { mutableStateOf(StorageOperations.loadGameData(context)?: GameData(0.0, 1, 1.0)) }
     when (selectedScreen) {
-        "home" -> MainScreen { selectedScreen = it }
+        "home" -> MainScreen(gameData, { newGameData -> gameData = newGameData }, { selectedScreen = it })
         "shop" -> shopScreen { selectedScreen = it }
-        "profile" -> profileScreen { selectedScreen = it }
+        "profile" -> profileScreen (gameData, { selectedScreen = it })
     }
 }
 
 
 @Composable
-fun MainScreen(onNavigate: (String) -> Unit)
+fun MainScreen(gameData: GameData, onGameDataChange: (GameData) -> Unit, onNavigate: (String) -> Unit)
 {
    val context = LocalContext.current
-    var gameData by remember { mutableStateOf(StorageOperations.loadGameData(context)?: GameData(0.0, 1, 1.0)) }
-
-
-
 
    Column(modifier = Modifier.fillMaxSize())
    {
@@ -66,21 +66,25 @@ fun MainScreen(onNavigate: (String) -> Unit)
 
 
            Body {
-               gameData = gameData.copy(money = gameData.money + gameData.jednoKlikniecie)
-               StorageOperations.saveGameData(context, gameData)
+               var newgameData = gameData.copy(money = gameData.money + gameData.jednoKlikniecie)
+               onGameDataChange(newgameData)
+               StorageOperations.saveGameData(context, newgameData)
 
            }
 
            if (gameData.money >= 1000 * gameData.level) {
                UpgradeButton(
                    onUpgrade = {
-                       gameData = gameData.copy(
+                    var newgameData = gameData.copy(
                            money = gameData.money - (1000 * gameData.level),
                            level = gameData.level + 1,
-                           jednoKlikniecie = gameData.jednoKlikniecie * (gameData.level * 0.8)
+                           jednoKlikniecie = gameData.jednoKlikniecie * ((gameData.level +1))
 
                        )
+                       onGameDataChange(newgameData)
+                       StorageOperations.saveGameData(context, newgameData)
                    })
+
 
            }
 
